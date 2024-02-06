@@ -63,25 +63,45 @@ vector<string> divideIntoTwos(string rawCipher) {
     cipherPairs.push_back(rawCipher.substr(pos, 2));
     pos+=2;
    }
-   string cipherString = " ";
-   for (const string& pair : cipherPairs) {
-    cipherString += pair + " ";
-   }
+//    string cipherString = " ";
+//    for (const string& pair : cipherPairs) {
+    // cipherString += pair + " ";
+//    }
    return cipherPairs;
 }
 
 char generateMatrix(string cipherKey) {
-    const int row = 5;
-    const int col = 5;
-    
-    char matrix[row][col];
-    
+    for (auto & c: cipherKey) c = toupper(c);
+    char alphabet = 'A';
+    char matrix[5][5];
+
+    replace(cipherKey.begin(), cipherKey.end(), 'J', 'I');
+    string alphabetString = cipherKey;
+    while (alphabet <= 'Z') {
+        if (alphabet != 'J') {
+            alphabetString += alphabet;
+        }
+        alphabet++;
+    }
+    string matrixString;
+    for_each(alphabetString.begin(), alphabetString.end(), [&](char uniqueChar) {
+        if (matrixString.find(uniqueChar) == string::npos) {
+            matrixString += uniqueChar;
+        }
+    });
+    cout << alphabetString << endl;
+    cout << matrixString << endl;
+
+
+    return 'A';
 }
 
 string decipherWithPlayFair(string cipher) {
     string cipherKey = promptKeyWord();
     cipher = removeSpaces(cipher);
     vector<string> cipherPairs = divideIntoTwos(cipher);
+    char hi = generateMatrix(cipherKey);
+    cout << "done with matrix" << endl;
     
 
 
