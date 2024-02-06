@@ -56,24 +56,33 @@ string removeSpaces(string rawCipher) {
     return cleansedCipher;
 }
 
-vector<string> divideIntoTwos(string rawCipher) {
+vector<string> divideIntoPairs(string rawCipher) {
    vector<string> cipherPairs;
    int pos = 0;
    while (pos < rawCipher.length()) {
     cipherPairs.push_back(rawCipher.substr(pos, 2));
     pos+=2;
    }
-//    string cipherString = " ";
-//    for (const string& pair : cipherPairs) {
-    // cipherString += pair + " ";
-//    }
    return cipherPairs;
 }
 
-char generateMatrix(string cipherKey) {
+void printPairs(string rawCipher) {
+    string cipherString;
+    int pos = 0;
+    while (pos < rawCipher.length()) {
+        cipherString += (rawCipher.substr(pos,2) + " ");
+        pos+=2;
+    }
+    cout << cipherString << endl;
+}
+
+char** generateMatrix(string cipherKey) {
     for (auto & c: cipherKey) c = toupper(c);
     char alphabet = 'A';
-    char matrix[5][5];
+    char** matrix = new char*[5];
+    for (int i = 0; i < 5; ++i) {
+        matrix[i] = new char[5];
+    }
 
     replace(cipherKey.begin(), cipherKey.end(), 'J', 'I');
     string alphabetString = cipherKey;
@@ -89,20 +98,43 @@ char generateMatrix(string cipherKey) {
             matrixString += uniqueChar;
         }
     });
-    cout << alphabetString << endl;
-    cout << matrixString << endl;
 
+    int pos = 0;
+    for (int i=0;i<5;i++) {
+        for (int j=0;j<5;j++) {
+            matrix[i][j] = matrixString[pos];
+            pos++;
+        }
+    }
 
-    return 'A';
+    return matrix;
+}
+
+void deleteMatrix(char** matrix) {
+    for (int i=0;i<5;i++) {
+        delete[] matrix[i];
+    }
+    delete[] matrix;
+}
+
+void printMatrix(char** matrix) {
+    for (int i=0;i<5;i++) {
+        for (int j=0;j<5;j++) {
+            cout << matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
 }
 
 string decipherWithPlayFair(string cipher) {
     string cipherKey = promptKeyWord();
     cipher = removeSpaces(cipher);
-    vector<string> cipherPairs = divideIntoTwos(cipher);
-    char hi = generateMatrix(cipherKey);
+    vector<string> cipherPairs = divideIntoPairs(cipher);
+    char** keyMatrix = generateMatrix(cipherKey);
+    printMatrix(keyMatrix);
+    deleteMatrix(keyMatrix);
     cout << "done with matrix" << endl;
-    
+    printPairs(cipher);
 
 
     return "";
