@@ -5,6 +5,12 @@
 #include <algorithm>
 using namespace std;
 
+enum PairData {
+    SAMEROW = 0,
+    SAMECOL = 1,
+    NOTSHARED = -1
+};
+
 string promptInput() {
     string inputData;
     cout<<"Type the Playfair cipher or provide the cipher's filename: ";
@@ -57,16 +63,24 @@ string removeSpaces(string rawCipher) {
 }
 
 vector<string> divideIntoPairs(string rawCipher) {
-   vector<string> cipherPairs;
-   int pos = 0;
-   while (pos < rawCipher.length()) {
-    cipherPairs.push_back(rawCipher.substr(pos, 2));
-    pos+=2;
-   }
-   return cipherPairs;
+    for (auto & c: rawCipher) c = toupper(c);
+    if (rawCipher.length() % 2 == 1) {
+        rawCipher += "Z";
+    }
+    vector<string> cipherPairs;
+    int pos = 0;
+    while (pos < rawCipher.length()) {
+        cipherPairs.push_back(rawCipher.substr(pos, 2));
+        pos+=2;
+    }
+    return cipherPairs;
 }
 
 void printPairs(string rawCipher) {
+    for (auto & c: rawCipher) c = toupper(c);
+    if (rawCipher.length() % 2 == 1) {
+        rawCipher += 'Z';
+    }
     string cipherString;
     int pos = 0;
     while (pos < rawCipher.length()) {
@@ -80,6 +94,7 @@ char** generateMatrix(string cipherKey) {
     for (auto & c: cipherKey) c = toupper(c);
     char alphabet = 'A';
     char** matrix = new char*[5];
+
     for (int i = 0; i < 5; ++i) {
         matrix[i] = new char[5];
     }
@@ -92,6 +107,7 @@ char** generateMatrix(string cipherKey) {
         }
         alphabet++;
     }
+
     string matrixString;
     for_each(alphabetString.begin(), alphabetString.end(), [&](char uniqueChar) {
         if (matrixString.find(uniqueChar) == string::npos) {
@@ -106,7 +122,6 @@ char** generateMatrix(string cipherKey) {
             pos++;
         }
     }
-
     return matrix;
 }
 
@@ -126,14 +141,30 @@ void printMatrix(char** matrix) {
     }
 }
 
+PairData comparePairContents(string pair, char** matrix) {
+    for (int i=0;i<5;i++) {
+        if (pair[0] == *matrix[i] && pair[1] == *matrix[i]) {
+
+        }
+    }
+    return SAMEROW;
+}
+
 string decipherWithPlayFair(string cipher) {
     string cipherKey = promptKeyWord();
     cipher = removeSpaces(cipher);
     vector<string> cipherPairs = divideIntoPairs(cipher);
     char** keyMatrix = generateMatrix(cipherKey);
+    
+    
+    for (int i=0;i<cipherPairs.size();i++) {
+        if (comparePairContents(cipherPairs[i], keyMatrix) == SAMEROW) {
+
+        }
+    }
+
     printMatrix(keyMatrix);
     deleteMatrix(keyMatrix);
-    cout << "done with matrix" << endl;
     printPairs(cipher);
 
 
@@ -145,7 +176,7 @@ string decipherWithPlayFair(string cipher) {
 int main() {
     string cipher = promptInput();
     string decryptedCipher = decipherWithPlayFair(cipher);
-    // cout << cipher << endl;
+    // cout << decryptedCipher << endl;
     return 0;
 }
 
