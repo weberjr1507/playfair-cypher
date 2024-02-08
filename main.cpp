@@ -40,6 +40,29 @@ string promptKeyWord() {
     return keyWord;
 }
 
+vector<int> saveSpaces(string rawCipher) {
+    vector<int> spaces;
+    int pos = 0;
+    int lastPos = 0;
+    while (pos < rawCipher.size()) {
+        if (rawCipher[pos] == ' ') {
+            spaces.push_back(pos-lastPos);
+            lastPos=pos;
+        }
+        pos++;
+    }
+    return spaces;
+}
+
+string restoreSpaces(string plaintext, vector<int> spaces) {
+    string newPlaintext = "";
+    int pos = 0;
+    while (pos < spaces.size()) {
+        newPlaintext += plaintext.substr(4)+ " ";
+    }
+    return newPlaintext;
+}
+
 string removeSpaces(string rawCipher) {
     string cleansedCipher;
     int pos = 0;
@@ -207,6 +230,7 @@ string decryptPairContents(string pair, char** matrix) {
 
 string decipherWithPlayFair(string cipher) {
     string cipherKey = promptKeyWord();
+    vector<int> spaces = saveSpaces(cipher);
     cipher = removeSpaces(cipher);
     vector<string> cipherPairs = divideIntoPairs(cipher);
     char** keyMatrix = generateMatrix(cipherKey);
@@ -215,6 +239,8 @@ string decipherWithPlayFair(string cipher) {
     for (int i=0;i<cipherPairs.size();i++) {
             plaintext += decryptPairContents(cipherPairs[i], keyMatrix);
         }
+    cout << plaintext << endl;
+    plaintext = restoreSpaces(plaintext, spaces);
     cout << plaintext << endl;
     printMatrix(keyMatrix);
     deleteMatrix(keyMatrix);
