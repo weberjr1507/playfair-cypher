@@ -7,11 +7,14 @@ Written by Jacob Weber
 
 # How To Run:
 
-Compiled binaries are provided in `bin/`.
+Compiled binaries are provided in the `bin/` directory.
 
-Windows: Run decipher.exe
-Linux: Run decipher
+- Windows: Run `bin/decipher.exe` or run `decipher.exe` from File Explorer
+- Linux: Run `bin/decipher`
 
 ## Compiling
 
-The source code, playfair.cpp, requires the GNU C++ Compiler to create a binary file.
+The source code, `src/playfair.cpp`, requires the GNU C++ Compiler to create a binary file.
+
+- Windows:
+- Linux: Most often GCC comes preinstalled. If you don't have, you can install it using your distro's respective package manager (apt,dnf,snap,flatpak,pacman,etc.). Otherwise, install from source: https://gcc.gnu.org/install/
