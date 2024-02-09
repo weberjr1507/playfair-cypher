@@ -1,10 +1,15 @@
-// Playfair cipher decoder by Jacob Weber
+// Playfair Cipher Decryptor written by Jacob Weber
+// Works Consulted: https://github.com/Abhiramborige/Crypto-systems/blob/master/playfair_decryption.py
+// Github: https://github.com/weberjr1507/playfair-cypher
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <algorithm>
 using namespace std;
 
+
+// promptInput(): Returns the playfair ciphertext provided by the user; ciphertext can
+//be provided by typing the text itself or the name of a file in the user's directory.
 string promptInput() {
     string inputData;
     cout<<"Type the Playfair cipher or provide the cipher's filename: ";
@@ -27,12 +32,8 @@ string promptInput() {
     return inputData;
 }
 
-//Step 1 for playfair cipher:
-//Remove all spaces
-//Separate string into pairs of two (possibly put each pair in an array)
-//Ask for key
-//Construct table (how to represent in data for appropriate purposes? 2D array?)//
 
+//promptKeyWord(): Returns key provided by the user.
 string promptKeyWord() {
     string keyWord;
     cout << "Enter the keyword of the cipher: ";
@@ -40,30 +41,10 @@ string promptKeyWord() {
     return keyWord;
 }
 
-vector<int> saveSpaces(string rawCipher) {
-    vector<int> spaces;
-    int pos = 0;
-    int lastPos = 0;
-    while (pos < rawCipher.size()) {
-        if (rawCipher[pos] == ' ') {
-            spaces.push_back(pos-lastPos);
-            lastPos=pos;
-        }
-        pos++;
-    }
-    return spaces;
-}
 
-string restoreSpaces(string plaintext, vector<int> spaces) {
-    string newPlaintext = "";
-    int pos = 0;
-    while (pos < spaces.size()) {
-        newPlaintext += plaintext.substr(4)+ " ";
-    }
-    return newPlaintext;
-}
-
-string removeSpaces(string rawCipher) {
+//formatCipher(string): Returns a formatted version of the user's ciphertext; removes
+//spaces and formats all characters to uppercase.
+string formatCipher(string rawCipher) {
     string cleansedCipher;
     int pos = 0;
     while (pos < rawCipher.size()) {
@@ -74,11 +55,14 @@ string removeSpaces(string rawCipher) {
         }
         pos += 1;
     }
+    for (auto & c: cleansedCipher) c = toupper(c);
     return cleansedCipher;
 }
 
+
+//divideIntoPairs(string): Returns a string array containing the ciphertext; puts every
+//two characters into an index of the array.
 vector<string> divideIntoPairs(string rawCipher) {
-    for (auto & c: rawCipher) c = toupper(c);
     if (rawCipher.length() % 2 == 1) {
         rawCipher += "Z";
     }
@@ -91,6 +75,9 @@ vector<string> divideIntoPairs(string rawCipher) {
     return cipherPairs;
 }
 
+
+//printPairs(string): Prints the pair sequence of the ciphertext; used primarily
+//for debug purposes.
 void printPairs(string rawCipher) {
     for (auto & c: rawCipher) c = toupper(c);
     if (rawCipher.length() % 2 == 1) {
@@ -105,6 +92,9 @@ void printPairs(string rawCipher) {
     cout << cipherString << endl;
 }
 
+
+//generateMatrix(string): Returns 2D char array containing the polybius square made
+//from the users key.
 char** generateMatrix(string cipherKey) {
     for (auto & c: cipherKey) c = toupper(c);
     char alphabet = 'A';
@@ -140,6 +130,8 @@ char** generateMatrix(string cipherKey) {
     return matrix;
 }
 
+
+//deleteMatrix(char**): Deletes the matrix to ensure no memory leaking.
 void deleteMatrix(char** matrix) {
     for (int i=0;i<5;i++) {
         delete[] matrix[i];
@@ -147,6 +139,8 @@ void deleteMatrix(char** matrix) {
     delete[] matrix;
 }
 
+
+//printMatrix(char**): Prints the matrix for debug purposes.
 void printMatrix(char** matrix) {
     for (int i=0;i<5;i++) {
         for (int j=0;j<5;j++) {
@@ -156,10 +150,10 @@ void printMatrix(char** matrix) {
     }
 }
 
-string decryptPairContents(string pair, char** matrix) {
-    
 
-    //separate matrix into string arrays containing each row and column
+//decryptPairContents(string, char**): Returns the inputted pair as its decrypted
+//equivalent; utilizes the Polybius square and Playfair's three transposition rules.
+string decryptPairContents(string pair, char** matrix) {
 
     string colData[5];
     string rowData[5];
@@ -170,20 +164,11 @@ string decryptPairContents(string pair, char** matrix) {
         }
     }
 
-    /*
-    check if: 
-    1. any column contains the pair
-    2. any row contains the pair
-    3. neither contain the pair
-    If pair is in a column or row, change char to neighbor above or left of it 
-    If pair is in neither, find horizontal corner char in relation to pair pos
-    Note:'pairPos'-1 won't work; inverted with +4 modulus 5  
-    */
     int pair0Pos;
     int pair1Pos;
-
-
-
+    
+    //Rule 1: If the pair share a column, shift each letter up by one in the
+    //square (-1 is not functional for indexes of 0; inverted to +4 mod 5).
     for (int i=0;i<5;i++) {
        pair0Pos = colData[i].find(pair[0]);
        pair1Pos = colData[i].find(pair[1]);
@@ -194,8 +179,8 @@ string decryptPairContents(string pair, char** matrix) {
        }
     }
 
-
-
+    //Rule 2: If the pair share a row, shift each letter left by one in the
+    //square (-1 is not functional for indexes of 0; inverted to +4 mod 5).
     for (int i=0;i<5;i++) {   
        pair0Pos = rowData[i].find(pair[0]);
        pair1Pos = rowData[i].find(pair[1]);
@@ -210,6 +195,9 @@ string decryptPairContents(string pair, char** matrix) {
     int pair0Row;
     int pair1Col;
     int pair1Row;
+    
+    //Rule 3: If the pair do not share a row or column, change each character
+    //to the one that share's its row but its *pairing's* column. 
     for (int i=0;i<5;i++) {   
         int pos = colData[i].find(pair[0]);
         if (pos != string::npos) {
@@ -228,33 +216,33 @@ string decryptPairContents(string pair, char** matrix) {
     return pair;
 }
 
+
+//decipherWithPlayfair(string): Returns plaintext calculated using the Playfair cipher; acts
+//as the Playfair master function.
 string decipherWithPlayFair(string cipher) {
     string cipherKey = promptKeyWord();
-    vector<int> spaces = saveSpaces(cipher);
-    cipher = removeSpaces(cipher);
-    vector<string> cipherPairs = divideIntoPairs(cipher);
+    string parsedCipher = formatCipher(cipher);
+    vector<string> cipherPairs = divideIntoPairs(parsedCipher);
     char** keyMatrix = generateMatrix(cipherKey);
     
     string plaintext;
     for (int i=0;i<cipherPairs.size();i++) {
             plaintext += decryptPairContents(cipherPairs[i], keyMatrix);
         }
-    cout << plaintext << endl;
-    plaintext = restoreSpaces(plaintext, spaces);
-    cout << plaintext << endl;
-    printMatrix(keyMatrix);
     deleteMatrix(keyMatrix);
-    // printPairs(cipher);
 
-
-    return "";
+    return plaintext;
 }
 
-//bonus: save original spacing to reapply at the end
+
+//printPlainText(string): prints the plaintext from a decrypted message.
+void printPlaintext(string plaintext) {
+    cout << "Decrypted Message: " << plaintext << endl;
+}
 
 int main() {
     string cipher = promptInput();
     string decryptedCipher = decipherWithPlayFair(cipher);
-    // cout << decryptedCipher << endl;
+    printPlaintext(decryptedCipher);
     return 0;
 }
