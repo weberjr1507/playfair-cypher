@@ -1,9 +1,9 @@
 # Playfair Cipher Decryptor 
-## Written by Jacob Weber
+Written by Jacob Weber
+## Github: https://github.com/weberjr1507/playfair-cypher
 ## Works Consulted: 
 - https://github.com/Abhiramborige/Crypto-systems/blob/master/playfair_decryption.py
 - https://www.geeksforgeeks.org/playfair-cipher-with-examples/
-## Github: https://github.com/weberjr1507/playfair-cypher
 
 # How To Run:
 
