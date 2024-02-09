@@ -1,5 +1,6 @@
 
 #include <filesystem>
+#include <vector>
 #include <fstream>
 #include <iostream>
 #include <algorithm>
@@ -15,8 +16,8 @@ string promptInput() {
     namespace fs = filesystem;
     string path = ".";
     for (const auto & entry : fs::directory_iterator(path)) {
-        string filePath = entry.path();
-        if (filePath.compare("./"+inputData) == 0) {
+        string filePath = entry.path().string();
+        if (filePath.compare(".\\"+inputData) == 0) {
             cout << "Found file: " << inputData << endl;
             inputData = "";
             ifstream inputFile (filePath);
@@ -227,6 +228,7 @@ string decipherWithPlayFair(string cipher) {
     for (int i=0;i<cipherPairs.size();i++) {
             plaintext += decryptPairContents(cipherPairs[i], keyMatrix);
         }
+    printMatrix(keyMatrix);
     deleteMatrix(keyMatrix);
 
     return plaintext;
@@ -242,5 +244,6 @@ int main() {
     string cipher = promptInput();
     string decryptedCipher = decipherWithPlayFair(cipher);
     printPlaintext(decryptedCipher);
+    cin.get();
     return 0;
 }
