@@ -16,7 +16,7 @@ Compiled binaries are provided in the `bin/` directory.
 
 The source code, `src/playfair.cpp`, requires the GNU C++ Compiler to create a binary file.
 
-- Windows: Download [MinGW](https://nuwen.net/mingw.html). Ensure it contains GCC 13+. Extract file and add `MinGW/bin` path to System Variables. Go to repository directory and run: 
+- Windows: Download [MinGW](https://nuwen.net/mingw.html). Ensure it contains GCC 13+. Extract file and add `MinGW/bin` path to **Control Panel > Advanced System Setting > Environment Variable > Edit path from System variable**. Go to repository directory and run: 
 ```
 g++ -o decipher.exe src/playfair-win.cpp
 ```
