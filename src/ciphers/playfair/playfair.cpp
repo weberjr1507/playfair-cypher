@@ -1,45 +1,4 @@
-
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <algorithm>
-using namespace std;
-
-
-// promptInput(): Returns the playfair ciphertext provided by the user; ciphertext can
-//be provided by typing the text itself or the name of a file in the user's directory.
-string promptInput() {
-    string inputData;
-    cout<<"Type the Playfair cipher or provide the cipher's filename: ";
-    getline(std::cin,inputData);
-    namespace fs = filesystem;
-    string path = ".";
-    for (const auto & entry : fs::directory_iterator(path)) {
-        string filePath = entry.path();
-        if (filePath.compare("./"+inputData) == 0) {
-            cout << "Found file: " << inputData << endl;
-            inputData = "";
-            ifstream inputFile (filePath);
-            string line;
-            while (getline(inputFile,line)) {
-                inputData += line;
-            }
-            inputFile.close();
-        }
-    }
-    return inputData;
-}
-
-
-//promptKeyWord(): Returns key provided by the user.
-string promptKeyWord() {
-    string keyWord;
-    cout << "Enter the keyword of the cipher: ";
-    getline(std::cin,keyWord);
-    return keyWord;
-}
-
-
+#include "playfair.hpp"
 //formatCipher(string): Returns a formatted version of the user's ciphertext; removes
 //spaces and formats all characters to uppercase.
 string formatCipher(string rawCipher) {
@@ -212,36 +171,4 @@ string decryptPairContents(string pair, char** matrix) {
     pair[1] = matrix[pair1Row][pair0Col];
     
     return pair;
-}
-
-
-//decipherWithPlayfair(string): Returns plaintext calculated using the Playfair cipher; acts
-//as the Playfair master function.
-string decipherWithPlayFair(string cipher) {
-    string cipherKey = promptKeyWord();
-    string parsedCipher = formatCipher(cipher);
-    vector<string> cipherPairs = divideIntoPairs(parsedCipher);
-    char** keyMatrix = generateMatrix(cipherKey);
-    
-    string plaintext;
-    for (int i=0;i<cipherPairs.size();i++) {
-            plaintext += decryptPairContents(cipherPairs[i], keyMatrix);
-        }
-    printMatrix(keyMatrix);
-    deleteMatrix(keyMatrix);
-
-    return plaintext;
-}
-
-
-//printPlainText(string): prints the plaintext from a decrypted message.
-void printPlaintext(string plaintext) {
-    cout << "Decrypted Message: " << plaintext << endl;
-}
-
-int main() {
-    string cipher = promptInput();
-    string decryptedCipher = decipherWithPlayFair(cipher);
-    printPlaintext(decryptedCipher);
-    return 0;
 }
