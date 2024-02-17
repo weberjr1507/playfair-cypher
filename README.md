@@ -23,5 +23,5 @@ g++ -o decipher.exe src/playfair-win.cpp
 
 - Linux: Most often GCC comes preinstalled. If you don't have it, you can install GCC using your distro's respective package manager (apt,dnf,snap,flatpak,pacman,etc.). Otherwise, install from source: https://gcc.gnu.org/install/. Go to repository directory and run:
 ```
-g++ -o decipher src/playfair.cpp
+g++ src/main/main.cpp src/ciphers/ciphers.cpp src/ciphers/playfair/playfair.cpp src/prompts/prompts.cpp -o bin/decipherplayfair
 ```
